@@ -1,0 +1,4 @@
+.idea
+venv
+config.json
+db.json
