@@ -46,10 +46,16 @@ def send_alerts(slack_url, content):
         "channel": "#" + SLACK_CHANNEL_NAME,
         "text": content
     }
-    resp = requests.post(slack_url, json=payload)
 
-    if resp.status_code >= 300:
-        logger.error("Something went wrong during sending slack alert! Panic")
+    success = False
+
+    while not success:
+        resp = requests.post(slack_url, json=payload)
+
+        if resp.status_code >= 300:
+            logger.error("Something went wrong during sending slack alert! Panic")
+        else:
+            success = True
 
 
 if __name__ == '__main__':
@@ -79,5 +85,6 @@ if __name__ == '__main__':
         else:
             logger.info("E-Scooters can now be purchased")
             send_alerts(slack_url=cfg["url"], content="E-Scooters are now available at OTTOnow. Go get one at " + WATCHING_URL)
+            exit(0)
 
         time.sleep(SLEEP_INTERVAL_IN_SECONDS + random.randint(-SLEEP_INTERVAL_THRESHOLD, SLEEP_INTERVAL_THRESHOLD))
