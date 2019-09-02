@@ -89,7 +89,7 @@ if __name__ == '__main__':
             else:
                 set_available(True)
                 logger.info("E-Scooters can now be purchased")
-                send_alerts(slack_url=cfg["url"], content="E-Scooters are now available at OTTOnow. Go get one at " + WATCHING_URL)
+                send_alerts(slack_url=cfg["url"], content="<@channel> E-Scooters are now available at OTTOnow. Go get one at " + WATCHING_URL)
                 exit(0)
 
         time.sleep(SLEEP_INTERVAL_IN_SECONDS + random.randint(-SLEEP_INTERVAL_THRESHOLD, SLEEP_INTERVAL_THRESHOLD))
