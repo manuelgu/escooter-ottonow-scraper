@@ -11,8 +11,8 @@ SLEEP_INTERVAL_THRESHOLD = 5
 
 SLACK_CHANNEL_NAME = "e-scooter"
 WATCHING_URL = "https://escooter.ottonow.de"
-TEXT_TO_VALIDATE = "Die E-Scooter von OTTO NOW stehen bald in den Startlöchern. Ab Anfang September wirst du bestellen und Ende September werden wir dann die ersten E-Scooter ausliefern können. Rechtzeitig bevor es losgeht, sagen wir dir gerne Bescheid. Melde dich hier einfach schon einmal unverbindlich an. Wir freuen uns auf dich!"
-MINIMUM_TEXT_TO_VALIDATE = "Impressum"
+TEXT_TO_VALIDATE = "Bald geht’s weiter –<br> bleib auf dem Laufenden!"
+MINIMUM_TEXT_TO_VALIDATE = "Über OTTO NOW"
 
 
 def _load_database() -> dict:
@@ -41,11 +41,11 @@ def set_available(v: bool):
         json.dump({"available": v}, f)
 
 
-def send_alerts(slack_url, content):
+def send_alerts(slack_url, message_content):
     """send alert to slack channel"""
     payload = {
         "channel": "#" + SLACK_CHANNEL_NAME,
-        "text": content
+        "text": message_content
     }
 
     success = False
@@ -74,9 +74,14 @@ if __name__ == '__main__':
         logger.info("Scooters are already available! Go get one.")
         exit(0)
 
-    send_alerts(slack_url=cfg["url"], content=":wave: :eyes: Now watching " + WATCHING_URL + "")
+    send_alerts(slack_url=cfg["url"], message_content=":wave: :eyes: Now watching " + WATCHING_URL + "")
 
-    headers = {"User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.142 Safari/537.36"}
+    headers = {
+        "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.142 Safari/537.36",
+        "Cache-Control": "no-cache, no-store, must-revalidate",
+        "Pragma": "no-cache",
+        "Expires": "0"
+    }
     while True:
         response = requests.get(WATCHING_URL, headers=headers)
         content = response.text
@@ -85,11 +90,11 @@ if __name__ == '__main__':
 
             if TEXT_TO_VALIDATE in response.text:
                 # Not yet available :-(
-                continue
+                pass
             else:
                 set_available(True)
                 logger.info("E-Scooters can now be purchased")
-                send_alerts(slack_url=cfg["url"], content="<@channel> E-Scooters are now available at OTTOnow. Go get one at " + WATCHING_URL)
+                send_alerts(slack_url=cfg["url"], message_content="<@channel> E-Scooters are now available at OTTO NOW. Go get one at " + WATCHING_URL)
                 exit(0)
 
         time.sleep(SLEEP_INTERVAL_IN_SECONDS + random.randint(-SLEEP_INTERVAL_THRESHOLD, SLEEP_INTERVAL_THRESHOLD))
