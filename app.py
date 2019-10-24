@@ -11,7 +11,7 @@ SLEEP_INTERVAL_THRESHOLD = 5
 
 SLACK_CHANNEL_NAME = "e-scooter"
 WATCHING_URL = "https://escooter.ottonow.de"
-TEXT_TO_VALIDATE = "Bald geht’s weiter –<br> bleib auf dem Laufenden!"
+TEXT_TO_VALIDATE = "bleib auf dem Laufenden!"
 MINIMUM_TEXT_TO_VALIDATE = "Über OTTO NOW"
 
 
@@ -25,7 +25,7 @@ def _load_config() -> dict:
         return json.load(f)
 
 
-def is_available():
+def is_available() -> bool:
     """check if database knows about availability"""
     # create file if not exists
     if not os.path.isfile("db.json"):
@@ -67,7 +67,7 @@ if __name__ == '__main__':
     try:
         cfg = _load_config()
     except FileNotFoundError:
-        logger.error("config.json is not present. Make sure to read README how to get started")
+        logger.error("config.json is not present. Make sure to read README on how to get started")
         exit(-1)
 
     if is_available():
